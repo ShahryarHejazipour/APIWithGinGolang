@@ -17,6 +17,7 @@ func FindBooks(c *gin.Context) {
 	})
 }
 
+//Create Book Validation
 type CreateBookValidation struct {
 	Title  string `json:"title" binding:"required"`
 	Author string `json:"author" binding:"required"`
@@ -40,5 +41,47 @@ func CreateBook(c *gin.Context) {
 
 	models.DB.Create(&book)
 
+	c.JSON(http.StatusOK, gin.H{"data": book})
+}
+
+// GET /books/:id
+// Find a book
+func FindBook(c *gin.Context) {
+
+	// Get model if exist
+	var book models.Book
+	if err := models.DB.Where("id=?", c.Param("id")).First(&book).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record Not Found!!"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": book})
+}
+
+//Update Book Validation
+type UpdateBookValidation struct {
+	Title  string `json:"title"`
+	Author string `json:"author"`
+}
+
+// PATCH /books/:id
+// Update a book
+func UpdateBook(c *gin.Context) {
+
+	// Get model if exist
+	var book models.Book
+
+	if err := models.DB.Where("id=?", c.Param("id")).First(&book).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record Not Found!!"})
+		return
+	}
+
+	// Validate input
+	var input UpdateBookValidation
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	models.DB.Model(&book).Updates(input)
 	c.JSON(http.StatusOK, gin.H{"data": book})
 }
