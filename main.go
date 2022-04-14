@@ -8,14 +8,15 @@ import (
 
 func main() {
 
-	r := gin.Default()
+	rout := gin.Default()
 
 	models.ConnectDatabase()
 
-	r.GET("/books", controllers.FindBooks)
-	r.POST("/books", controllers.CreateBook)
-	r.GET("/books/:id", controllers.FindBook)
-	r.PATCH("/books/:id", controllers.UpdateBook)
-	r.Run()
+	rout.GET("/books", controllers.FindBooks)
+	rout.POST("/books", controllers.CreateBook)
+	rout.GET("/books/:id", controllers.FindBook)
+	rout.PATCH("/books/:id", controllers.UpdateBook)
+	rout.DELETE("/books/:id", controllers.DeleteBook)
+	rout.Run()
 
 }
